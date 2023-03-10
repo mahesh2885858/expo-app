@@ -1,20 +1,28 @@
-import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import * as React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import HomeScreen from "./components/HomeScreen"
+import ProfileScreen from "./components/ProfileScreen"
+import SignIn from './components/SignIn';
+import { context } from './components/Context';
+const Stack = createNativeStackNavigator();
 
-export default function App() {
+const MyStack = () => {
+  const [isLoggedIn, setIsLoggedIn] = React.useState(false)
   return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-      <StatusBar style="auto" />
-    </View>
-  );
-}
+    <context.Provider value={{ setIsLoggedIn }} >
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
+      <NavigationContainer>
+        <Stack.Navigator>
+          <Stack.Screen
+            name="Home"
+            component={isLoggedIn ? HomeScreen : SignIn}
+            options={{ title: 'Welcome' }}
+          />
+          <Stack.Screen name="Profile" component={ProfileScreen} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </context.Provider>
+  );
+};
+export default MyStack
