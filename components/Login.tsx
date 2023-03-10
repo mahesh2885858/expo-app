@@ -2,7 +2,7 @@ import { View, Text, StyleSheet, TextInput, Platform, Pressable, TouchableOpacit
 import React, { useContext, useState } from 'react'
 import Lottie from 'lottie-react-native';
 import { FireBaseApp } from '../utils/firebaseConfig';
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import { context } from './Context';
 
 const SignIn = ({ navigation }) => {
@@ -12,15 +12,16 @@ const SignIn = ({ navigation }) => {
     const [password, setPassword] = useState('')
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState("")
-    const signupUser = async () => {
+    const loginUser = async () => {
         setError("")
         setIsLoading(true)
         try {
-            await createUserWithEmailAndPassword(auth, email, password)
+            const data = await signInWithEmailAndPassword(auth, email, password)
             setIsLoading(false)
             setEmail('')
             setPassword('')
-            navigation.navigate("Login")
+            console.log({ data })
+            // navigation.navigate("Login")
         } catch (err: any) {
             console.log(err)
             setError(err.message)
@@ -30,8 +31,8 @@ const SignIn = ({ navigation }) => {
     }
     return (
         <View style={styles.container} >
-            <View style={styles.signInContainer}>
-                <Text style={styles.signInText}>Sign In</Text>
+            <View style={styles.loginContainer}>
+                <Text style={styles.loginText}>Log-In</Text>
 
                 <TextInput value={email} onChangeText={(text) => setEmail(text)} style={styles.TextInput} placeholder="Email" />
                 <TextInput value={password} onChangeText={(text) => setPassword(text)} secureTextEntry style={styles.TextInput} placeholder="Password" />
@@ -39,22 +40,22 @@ const SignIn = ({ navigation }) => {
 
                     isLoading ? (
 
-                        <TouchableOpacity onPress={signupUser} style={styles.singInButton}  >
+                        <TouchableOpacity onPress={loginUser} style={styles.loginButton}  >
                             <Lottie source={require("../assets/loading.json")} autoPlay />
                         </TouchableOpacity>
                     ) : (
 
-                        <TouchableOpacity onPress={signupUser} style={styles.singInButton} ><Text style={{ color: "white" }}>
-                            SignIn
+                        <TouchableOpacity onPress={loginUser} style={styles.loginButton} ><Text style={{ color: "white" }}>
+                            Login
                         </Text>
                         </TouchableOpacity>
                     )
                 }
 
                 {error && <Text style={{ color: "red" }}>{error}</Text>}
-                <Text>Already have an account? </Text>
-                <TouchableOpacity onPress={() => navigation.navigate("Login")}  >
-                    <Text style={{ color: 'blue' }}>Login here</Text>
+                <Text>Don't have an account? </Text>
+                <TouchableOpacity onPress={() => navigation.navigate("SignIn")}  >
+                    <Text style={{ color: 'blue' }}>Create one here</Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -68,7 +69,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         display: 'flex'
     },
-    signInContainer: {
+    loginContainer: {
         width: "85%",
         padding: 15,
         display: 'flex',
@@ -86,8 +87,8 @@ const styles = StyleSheet.create({
         shadowRadius: 20,
         elevation: Platform.OS === 'android' ? 5 : 0,
     },
-    signInText: {
-        color: "red",
+    loginText: {
+        color: "green",
         fontSize: 20,
         fontWeight: "bold",
         textAlign: "center",
@@ -101,7 +102,7 @@ const styles = StyleSheet.create({
         backgroundColor: "white",
         fontSize: 15,
     },
-    singInButton: {
+    loginButton: {
 
         padding: 10,
         backgroundColor: "blue",
